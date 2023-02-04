@@ -1,0 +1,209 @@
+#include <windows.h>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include "StudentRec.h"
+//last update - 04.02.2023 as per StackOverflow thread recommendations. Rebuilding from scratch. IT WORKS!!!!!!
+
+
+
+
+//lresult callback prototype
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+
+
+//window handles
+HWND hMainWindow;
+HINSTANCE hMainInstance;
+
+HWND hLblOutput;
+HWND hTxtInput;
+HWND hButton;
+
+CHAR s_text_1[]{ "Some text.." };
+
+
+#define IDC_TEXTBOX 1000
+#define IDC_BUTTON 1001
+
+
+
+
+//call to winmain - equivalent of main for win32 environments
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+
+
+	MSG msg = { 0 };
+	WNDCLASS wc = { 0 };
+	wc.lpfnWndProc = WndProc;
+	wc.hInstance = hInstance;
+	wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
+	wc.lpszClassName = TEXT("NiceWindowsApp");
+	if (!RegisterClass(&wc))
+		return 1;
+
+	hMainWindow = CreateWindow(wc.lpszClassName, TEXT("My Windows Application"), WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		0, 0, 640, 480, 0, 0, hInstance, NULL);
+
+	hMainInstance = wc.hInstance;
+
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return 0;
+}
+//callback definition
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	int offset = 0;
+	std::wstring input;
+	switch (message) {
+
+	case WM_CREATE:
+	{
+		hMainWindow = hWnd;
+		hTxtInput = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), s_text_1,
+			WS_VISIBLE | WS_CHILD | ES_LEFT, 50, 50, 400, 25, hWnd,
+			(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+		hButton = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Press Me!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 500, 30, 100, 60, hWnd,
+			(HMENU)IDC_BUTTON, hMainInstance, NULL);
+		break;
+	}
+
+		case WM_COMMAND:
+		{
+			if (LOWORD(wParam) == IDC_BUTTON)
+			{
+				input.resize(GetWindowTextLengthW(hTxtInput));
+				GetWindowTextW(hTxtInput, input.data(), input.size() + 1);
+
+				//++offset;
+
+				/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), s_text_1, WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 50, 200 + offset * 26, 800, 25, hWnd,
+					(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+				SetWindowTextW(hLblOutput, input.data());*/
+
+
+				std::ifstream inputFile;
+				inputFile.open(input.data());
+
+				std::string line = "";
+				std::vector<StudentRec> students;
+				while (std::getline(inputFile, line))
+				{
+
+					std::stringstream inputString(line);
+
+					std::string studentId;
+					std::string lastName;
+					std::string firstName;
+					int age;
+					std::string phone;
+					double gpa;
+					std::string tempString;
+
+
+
+					getline(inputString, studentId, ',');
+					getline(inputString, lastName, ',');
+					getline(inputString, firstName, ',');
+					//getting the age
+					getline(inputString, tempString, ',');
+					age = atoi(tempString.c_str());
+					getline(inputString, phone, ',');
+					//getting the GPA
+					tempString = "";
+					getline(inputString, tempString);
+					gpa = atof(tempString.c_str());
+
+					StudentRec student(studentId, firstName, lastName, age, phone, gpa);
+					students.push_back(student);
+					line = "";
+				}
+
+				//loop through students array and output info into windows
+
+				for (auto student : students)
+				{
+					std::string* StdFirstNameP = &student.FirstName;
+					std::string* StdLastNameP = &student.LastName;
+					std::string StdFirstName = *StdFirstNameP;
+					std::string StdLastName = *StdLastNameP;
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 250, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					++offset;
+
+				}
+
+
+
+			}
+
+
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+
+	return 0;
+}
+
+
+
+*******************************************************************************************************************************************
+StudentRec.h
+********************************************************************************************************************************************
+
+
+#ifndef STUDENTREC_H
+#define STUDENTREC_H
+#include <string>
+
+class StudentRec
+{
+	public:
+		StudentRec(std::string id, std::string firstName, std::string lastName, int age, std::string phoneNumber, double gpa);
+	
+
+	std::string Id;
+	std::string FirstName;
+	std::string LastName;
+	std::string PhoneNumber;
+	int Age;
+	double Gpa;
+
+
+};
+#endif
+
+*************************************************************************************************************************************
+StudentRec.cpp
+*************************************************************************************************************************************
+
+
+#include "StudentRec.h"
+
+StudentRec::StudentRec(std::string id, std::string firstName, std::string lastName, int age, std::string phoneNumber, double gpa)
+	{
+		Id = id;
+		FirstName = firstName;
+		LastName = lastName;
+		PhoneNumber = phoneNumber;
+		Age = age;
+		Gpa = gpa;
+
+	}
+
+
+
