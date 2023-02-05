@@ -84,10 +84,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				input.resize(GetWindowTextLengthW(hTxtInput));
 				GetWindowTextW(hTxtInput, input.data(), input.size() + 1);
 
-				//++offset;
+				
 
-				/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), s_text_1, WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 50, 200 + offset * 26, 800, 25, hWnd,
-					(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+				/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), s_text_1, WS_VISIBLE | WS_CHILD | ES_READONLY | 
+												ES_LEFT, 50, 200 + offset * 26, 800, 25, hWnd,
+												(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 				SetWindowTextW(hLblOutput, input.data());*/
 
 
@@ -148,23 +149,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 			}
-
-
-
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 		}
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
 	return 0;
 }
 
-
-
-*******************************************************************************************************************************************
-StudentRec.h
-********************************************************************************************************************************************
-
+*******************************************************************************************************************************************************************************************
+StudentRec.h 
+********************************************************************************************************************************************************************************************
 
 #ifndef STUDENTREC_H
 #define STUDENTREC_H
@@ -187,10 +182,9 @@ class StudentRec
 };
 #endif
 
-*************************************************************************************************************************************
+********************************************************************************************************************************************************************************************
 StudentRec.cpp
-*************************************************************************************************************************************
-
+********************************************************************************************************************************************************************************************
 
 #include "StudentRec.h"
 
@@ -204,6 +198,3 @@ StudentRec::StudentRec(std::string id, std::string firstName, std::string lastNa
 		Gpa = gpa;
 
 	}
-
-
-
