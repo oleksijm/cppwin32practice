@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "StudentRec.h"
-//last update - 04.02.2023 as per StackOverflow thread recommendations. Rebuilding from scratch. IT WORKS!!!!!!
+//last update - 05.02.2023 added scrollbars, but no message control yet.
 
 
 
@@ -47,8 +47,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (!RegisterClass(&wc))
 		return 1;
 
-	hMainWindow = CreateWindow(wc.lpszClassName, TEXT("My Windows Application"), WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+	//added ws_hscroll and ws_vscroll, but they are not working without additional control message flows
+	hMainWindow = CreateWindow(wc.lpszClassName, TEXT("My Windows Application"), WS_OVERLAPPEDWINDOW | WS_HSCROLL | WS_VSCROLL | WS_VISIBLE,
 		0, 0, 640, 480, 0, 0, hInstance, NULL);
+
+
 
 	hMainInstance = wc.hInstance;
 
@@ -84,9 +87,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				input.resize(GetWindowTextLengthW(hTxtInput));
 				GetWindowTextW(hTxtInput, input.data(), input.size() + 1);
 
-				
 
-				/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), s_text_1, WS_VISIBLE | WS_CHILD | ES_READONLY | 
+
+				/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), s_text_1, WS_VISIBLE | WS_CHILD | ES_READONLY |
 												ES_LEFT, 50, 200 + offset * 26, 800, 25, hWnd,
 												(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 				SetWindowTextW(hLblOutput, input.data());*/
@@ -137,9 +140,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					std::string* StdLastNameP = &student.LastName;
 					std::string StdFirstName = *StdFirstNameP;
 					std::string StdLastName = *StdLastNameP;
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY | ES_LEFT, 250, 200 + offset * 26, 100, 25, hWnd,
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 250, 200 + offset * 26, 100, 25, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					++offset;
@@ -149,6 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 			}
+			break; 
 		}
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -156,6 +162,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
+
+
 
 *******************************************************************************************************************************************************************************************
 StudentRec.h 
