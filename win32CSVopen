@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "StudentRec.h"
-//last update - 05.02.2023 added scrollbars, but no message control yet.
+//last update - 06.02.2023 trying to add scrollbar controls.
 
 
 
@@ -25,6 +25,7 @@ HWND hTxtInput;
 HWND hButton;
 
 CHAR s_text_1[]{ "Some text.." };
+int posX = 0;
 
 
 #define IDC_TEXTBOX 1000
@@ -77,9 +78,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 		hButton = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Press Me!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 500, 30, 100, 60, hWnd,
 			(HMENU)IDC_BUTTON, hMainInstance, NULL);
+
+		//horizontal scrolling set up
+		SCROLLINFO si;
+		si.cbSize = sizeof(si);
+		si.nPos = 0;
+		si.nMax = 800;
+		si.nPage = 400;
+		si.fMask = SIF_ALL;
+		si.nMin = 0;
+		SetScrollInfo(hWnd, SB_HORZ, &si, TRUE);
+
 		break;
 	}
+	//not working properly - 06.02.2023. it's working, but I'm still learning the details.
+	case WM_HSCROLL: {
+		SCROLLINFO si;
+		si.cbSize = sizeof(si);
+		GetScrollInfo(hWnd, SB_HORZ, &si);
+		switch (LOWORD(wParam)) {
+		case SB_LINELEFT: {
+			si.nPos -= 5;
+		}break;
+		case SB_LINERIGHT: {
+			si.nPos += 5;
+		}break;
+		case SB_THUMBTRACK: {
+			si.nPos = HIWORD(wParam);
+		}break;
+		};
+		SetScrollInfo(hWnd, SB_HORZ, &si, TRUE);
+		posX = -si.nPos;
+		MoveWindow(
+			hTxtInput,
+			posX,
+			200,
+			800,
+			500,
+			TRUE
+		);
+	}break;
 
+
+		//press button
 		case WM_COMMAND:
 		{
 			if (LOWORD(wParam) == IDC_BUTTON)
@@ -162,9 +203,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-
-
-
 
 
 *******************************************************************************************************************************************************************************************
