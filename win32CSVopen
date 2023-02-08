@@ -5,8 +5,13 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <memory>
 #include "StudentRec.h"
-//last update - 06.02.2023 trying to add scrollbar controls.
+#include "StudentWindowCollection.h"
+	
+//last update - 08.02.2023 adding class type for window handles to put into window collections vector, in order to manipulate them during scrolling. 
+//It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
+//Now I need to implement horizontal scrolling across the output windows as well.
 
 
 
@@ -109,14 +114,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		};
 		SetScrollInfo(hWnd, SB_HORZ, &si, TRUE);
 		posX = -si.nPos;
-		MoveWindow(
+		MoveWindow( // 50, 50, 400, 25 - original
 			hTxtInput,
-			posX,
-			200,
-			800,
-			500,
+			posX+50,
+			50,
+			400,
+			25,
 			TRUE
 		);
+		MoveWindow( // 500, 30, 100, 60 - original 
+			hButton,
+			posX+500,
+			30,
+			100,
+			60,
+			TRUE
+		);
+
+
 	}break;
 
 
@@ -141,6 +156,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				std::string line = "";
 				std::vector<StudentRec> students;
+				std::vector<StudentWindowCollection> windows;
 				while (std::getline(inputFile, line))
 				{
 
@@ -177,16 +193,62 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				for (auto student : students)
 				{
+					
+					std::string* StdIdP = &student.Id;
 					std::string* StdFirstNameP = &student.FirstName;
 					std::string* StdLastNameP = &student.LastName;
+					int* StdAgeP = &student.Age;
+					std::string* StdPhoneP = &student.PhoneNumber;
+					double* StdGpaP = &student.Gpa;
+					std::string StdId = *StdIdP;
 					std::string StdFirstName = *StdFirstNameP;
 					std::string StdLastName = *StdLastNameP;
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					int StdAge = *StdAgeP;
+					std::string StdAgeString = std::to_string(StdAge);
+					std::string StdPhone = *StdPhoneP;
+					double StdGpa = *StdGpaP;
+					std::string StdGpaString = std::to_string(StdGpa);
+
+					std::unique_ptr<StudentWindowCollection> SWC1(new StudentWindowCollection());
+
+
+
+					SWC1->IdWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdId.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					SWC1->FirstNameWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 150, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					SWC1->LastNameWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 320, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					SWC1->AgeWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdAgeString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 430, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					SWC1->PhoneNumberWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdPhone.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 540, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					SWC1->GpaWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdGpaString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 650, 200 + offset * 26, 100, 25, hWnd,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					windows.push_back(*SWC1);
+				
+
+
+
+
+					/*hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 250, 200 + offset * 26, 100, 25, hWnd,
-						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);*/
 
 					++offset;
 
@@ -203,6 +265,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
+
+
+
+
 
 
 *******************************************************************************************************************************************************************************************
@@ -246,3 +314,51 @@ StudentRec::StudentRec(std::string id, std::string firstName, std::string lastNa
 		Gpa = gpa;
 
 	}
+	
+	
+**********************************************************************************************************************************************************************************************
+StudentWindowCollection.h
+***********************************************************************************************************************************************************************************************
+
+#ifndef STUDENTWINDOWCOLLECTION_H
+#define STUDENTWINDOWCOLLECTION_H
+#include <windows.h>
+
+
+class StudentWindowCollection
+{
+public:
+	StudentWindowCollection(HWND idWindow, HWND firstNameWindow, HWND lastNameWindow, HWND ageWindow, HWND phoneNumberWindow, HWND gpaWindow);
+	StudentWindowCollection();
+
+
+	HWND IdWindow;
+	HWND FirstNameWindow;
+	HWND LastNameWindow;
+	HWND PhoneNumberWindow;
+	HWND AgeWindow;
+	HWND GpaWindow;
+
+
+};
+#endif
+
+************************************************************************************************************************************************************************************************
+StudentWindowCollection.cpp
+************************************************************************************************************************************************************************************************
+
+#include "StudentWindowCollection.h"
+
+
+StudentWindowCollection::StudentWindowCollection(HWND idWindow, HWND firstNameWindow, HWND lastNameWindow, HWND ageWindow, HWND phoneNumberWindow, HWND gpaWindow)
+{
+	IdWindow = idWindow;
+	FirstNameWindow = firstNameWindow;
+	LastNameWindow = lastNameWindow;
+	PhoneNumberWindow = phoneNumberWindow;
+	AgeWindow = ageWindow;
+	GpaWindow = gpaWindow;
+
+}
+StudentWindowCollection::StudentWindowCollection() {}
+
