@@ -73,6 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int offset = 0;
 	std::wstring input;
+	std::vector<StudentWindowCollection> windows;
 	switch (message) {
 
 	case WM_CREATE:
@@ -130,6 +131,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			60,
 			TRUE
 		);
+		//for (auto window : windows)
+		// {
+			//MoveWindow(window.FirstNameWindow,)
+
+		//}
 
 
 	}break;
@@ -156,7 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				std::string line = "";
 				std::vector<StudentRec> students;
-				std::vector<StudentWindowCollection> windows;
+				//std::vector<StudentWindowCollection> windows;
 				while (std::getline(inputFile, line))
 				{
 
@@ -265,6 +271,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
 
 
 
