@@ -9,7 +9,7 @@
 #include "StudentRec.h"
 #include "StudentWindowCollection.h"
 	
-//last update - 08.02.2023 adding class type for window handles to put into window collections vector, in order to manipulate them during scrolling. 
+//last update - 10.02.2023 expanding window collection class in order to accommodate for additiona info needed to handle scrolling smoothly 
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -280,6 +280,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
+
 *******************************************************************************************************************************************************************************************
 StudentRec.h 
 ********************************************************************************************************************************************************************************************
@@ -335,26 +336,63 @@ StudentWindowCollection.h
 class StudentWindowCollection
 {
 public:
+	StudentWindowCollection(HWND idWindow, int idWindowXCoord, HWND firstNameWindow, int firstNameWindowXCoord,
+							HWND lastNameWindow, int lastNameWindowXCoord, HWND ageWindow, int ageWindowXCoord, HWND phoneNumberWindow, int phoneNumberWindowXCoord,
+							HWND gpaWindow, int gpaWindowXCoord);
+
 	StudentWindowCollection(HWND idWindow, HWND firstNameWindow, HWND lastNameWindow, HWND ageWindow, HWND phoneNumberWindow, HWND gpaWindow);
+
+	StudentWindowCollection(int idWindowXCoord, int firstNameWindowxCoord, int lastNameWindowXCoord, int ageWindowXCoord, int phoneNumberWindowXCoord, int gpaWindowXCoord);
+
 	StudentWindowCollection();
 
 
 	HWND IdWindow;
+	int IdWindowXCoord;
 	HWND FirstNameWindow;
+	int FirstNameWindowXCoord;
 	HWND LastNameWindow;
+	int LastNameWindowXCoord;
 	HWND PhoneNumberWindow;
+	int PhoneNumberWindowXCoord;
 	HWND AgeWindow;
+	int AgeWindowXCoord;
 	HWND GpaWindow;
-
+	int GpaWindowXCoord;
 
 };
 #endif
+
+
 
 ************************************************************************************************************************************************************************************************
 StudentWindowCollection.cpp
 ************************************************************************************************************************************************************************************************
 
 #include "StudentWindowCollection.h"
+
+
+StudentWindowCollection::StudentWindowCollection(HWND idWindow, int idWindowXCoord, HWND firstNameWindow, int firstNameWindowXCoord,
+	HWND lastNameWindow, int lastNameWindowXCoord, HWND ageWindow, int ageWindowXCoord, HWND phoneNumberWindow, int phoneNumberWindowXCoord,
+	HWND gpaWindow, int gpaWindowXCoord)
+{
+
+	IdWindow = idWindow;
+	IdWindowXCoord = idWindowXCoord;
+	FirstNameWindow = firstNameWindow;
+	FirstNameWindowXCoord = firstNameWindowXCoord;
+	LastNameWindow = lastNameWindow;
+	LastNameWindowXCoord = lastNameWindowXCoord;
+	AgeWindow = ageWindow;
+	AgeWindowXCoord = ageWindowXCoord;
+	PhoneNumberWindow = phoneNumberWindow;
+	PhoneNumberWindowXCoord = phoneNumberWindowXCoord;
+	GpaWindow = gpaWindow;
+	GpaWindowXCoord = gpaWindowXCoord;
+	
+}
+
+
 
 
 StudentWindowCollection::StudentWindowCollection(HWND idWindow, HWND firstNameWindow, HWND lastNameWindow, HWND ageWindow, HWND phoneNumberWindow, HWND gpaWindow)
@@ -367,5 +405,19 @@ StudentWindowCollection::StudentWindowCollection(HWND idWindow, HWND firstNameWi
 	GpaWindow = gpaWindow;
 
 }
+
+StudentWindowCollection::StudentWindowCollection(int idWindowXCoord, int firstNameWindowXCoord, int lastNameWindowXCoord, int ageWindowXCoord, int phoneNumberWindowXCoord, int gpaWindowXCoord)
+{
+	IdWindowXCoord = idWindowXCoord;
+	FirstNameWindowXCoord = firstNameWindowXCoord;
+	LastNameWindowXCoord = lastNameWindowXCoord;
+	AgeWindowXCoord = ageWindowXCoord;
+	PhoneNumberWindowXCoord = phoneNumberWindowXCoord;
+	GpaWindowXCoord = gpaWindowXCoord;
+
+}
+
 StudentWindowCollection::StudentWindowCollection() {}
+
+
 
