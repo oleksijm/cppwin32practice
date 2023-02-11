@@ -9,7 +9,7 @@
 #include "StudentRec.h"
 #include "StudentWindowCollection.h"
 	
-//last update - 10.02.2023 expanding window collection class in order to accommodate for additiona info needed to handle scrolling smoothly 
+//last update - 11.02.2023 expanding window collection class in order to accommodate for additiona info needed to handle scrolling smoothly - cannot get the output windows to move through loop
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -73,7 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int offset = 0;
 	std::wstring input;
-	std::vector<StudentWindowCollection> windows;
+	std::vector<StudentWindowCollection*> windows;
 	switch (message) {
 
 	case WM_CREATE:
@@ -131,11 +131,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			60,
 			TRUE
 		);
-		//for (auto window : windows)
-		// {
-			//MoveWindow(window.FirstNameWindow,)
 
-		//}
+		
+
+		for (auto window1 : windows)
+		 {
+			MoveWindow(window1->IdWindow, posX + window1->IdWindowXCoord, window1->IdWindowYCoord, window1->IdWindowWidth, window1->IdWindowHeight, TRUE);
+			MoveWindow(window1->FirstNameWindow, posX + window1->FirstNameWindowXCoord, window1->FirstNameWindowYCoord, window1->FirstNameWindowWidth, window1->FirstNameWindowHeight, TRUE);
+			MoveWindow(window1->LastNameWindow, posX + window1->LastNameWindowXCoord, window1->LastNameWindowYCoord, window1->LastNameWindowWidth, window1->LastNameWindowHeight, TRUE);
+			MoveWindow(window1->PhoneNumberWindow, posX + window1->PhoneNumberWindowXCoord, window1->PhoneNumberWindowYCoord, window1->PhoneNumberWindowWidth, window1->PhoneNumberWindowHeight, TRUE);
+			MoveWindow(window1->AgeWindow, posX + window1->AgeWindowXCoord, window1->AgeWindowYCoord, window1->AgeWindowWidth, window1->AgeWindowHeight, TRUE);
+			MoveWindow(window1->GpaWindow, posX + window1->GpaWindowXCoord, window1->GpaWindowYCoord, window1->GpaWindowWidth, window1->GpaWindowHeight, TRUE);
+			
+		}
 
 
 	}break;
@@ -215,35 +223,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					double StdGpa = *StdGpaP;
 					std::string StdGpaString = std::to_string(StdGpa);
 
-					std::unique_ptr<StudentWindowCollection> SWC1(new StudentWindowCollection());
+					//std::unique_ptr<StudentWindowCollection> SWC1(new StudentWindowCollection(50, 150, 320, 430, 540, 650));
+
+
+
+					/*std::unique_ptr<StudentWindowCollection> SWC1(new StudentWindowCollection(	50, 200, 26, 100,
+																								150, 200, 26, 100,
+																								320, 200, 26, 100,
+																								430, 200, 26, 100,
+																								540, 200, 26, 100,
+																								650, 200, 26, 100 ));*/
+
+					StudentWindowCollection* SWC1 = new StudentWindowCollection(50, 200, 26, 100,
+						150, 200, 26, 100,
+						320, 200, 26, 100,
+						430, 200, 26, 100,
+						540, 200, 26, 100,
+						650, 200, 26, 100);
 
 
 
 					SWC1->IdWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdId.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 50, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->IdWindowXCoord, SWC1->IdWindowYCoord + offset * 26, SWC1->IdWindowWidth, SWC1->IdWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					SWC1->FirstNameWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 150, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->FirstNameWindowXCoord, SWC1->FirstNameWindowYCoord + offset * 26, SWC1->FirstNameWindowWidth, SWC1->FirstNameWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					SWC1->LastNameWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 320, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->LastNameWindowXCoord, SWC1->LastNameWindowYCoord + offset * 26, SWC1->LastNameWindowWidth, SWC1->LastNameWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					SWC1->AgeWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdAgeString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 430, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->AgeWindowXCoord, SWC1->AgeWindowYCoord + offset * 26, SWC1->AgeWindowWidth, SWC1->AgeWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					SWC1->PhoneNumberWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdPhone.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 540, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->PhoneNumberWindowXCoord, SWC1->PhoneNumberWindowYCoord + offset * 26, SWC1->PhoneNumberWindowWidth, SWC1->PhoneNumberWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
 					SWC1->GpaWindow = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdGpaString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
-						ES_LEFT, 650, 200 + offset * 26, 100, 25, hWnd,
+						ES_LEFT, SWC1->GpaWindowXCoord, SWC1->GpaWindowYCoord + offset * 26, SWC1->GpaWindowWidth, SWC1->GpaWindowHeight, hWnd,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					windows.push_back(*SWC1);
+					windows.push_back(SWC1);
 				
 
 
@@ -336,6 +360,71 @@ StudentWindowCollection.h
 class StudentWindowCollection
 {
 public:
+
+	StudentWindowCollection(HWND IdWindow,
+		int IdWindowXCoord,
+		int IdWindowYCoord,
+		int IdWindowHeight,
+		int IdWindowWidth,
+		HWND FirstNameWindow,
+		int FirstNameWindowXCoord,
+		int FirstNameWindowYCoord,
+		int FirstNameWindowHeight,
+		int FirstNameWindowWidth,
+		HWND LastNameWindow,
+		int LastNameWindowXCoord,
+		int LastNameWindowYCoord,
+		int LastNameWindowHeight,
+		int LastNameWindowWidth,
+		HWND PhoneNumberWindow,
+		int PhoneNumberWindowXCoord,
+		int PhoneNumberWindowYCoord,
+		int PhoneNumberWindowHeight,
+		int PhoneNumberWindowWidth,
+		HWND AgeWindow,
+		int AgeWindowXCoord,
+		int AgeWindowYCoord,
+		int AgeWindowHeight,
+		int AgeWindowWidth,
+		HWND GpaWindow,
+		int GpaWindowXCoord,
+		int GpaWindowYCoord,
+		int GpaWindowHeight,
+		int GpaWindowWidth
+		);
+
+	StudentWindowCollection(
+		int IdWindowXCoord,
+		int IdWindowYCoord,
+		int IdWindowHeight,
+		int IdWindowWidth,
+		int FirstNameWindowXCoord,
+		int FirstNameWindowYCoord,
+		int FirstNameWindowHeight,
+		int FirstNameWindowWidth,
+		int LastNameWindowXCoord,
+		int LastNameWindowYCoord,
+		int LastNameWindowHeight,
+		int LastNameWindowWidth,
+		int PhoneNumberWindowXCoord,
+		int PhoneNumberWindowYCoord,
+		int PhoneNumberWindowHeight,
+		int PhoneNumberWindowWidth,
+		int AgeWindowXCoord,
+		int AgeWindowYCoord,
+		int AgeWindowHeight,
+		int AgeWindowWidth,
+		int GpaWindowXCoord,
+		int GpaWindowYCoord,
+		int GpaWindowHeight,
+		int GpaWindowWidth
+		);
+
+
+
+
+
+
 	StudentWindowCollection(HWND idWindow, int idWindowXCoord, HWND firstNameWindow, int firstNameWindowXCoord,
 							HWND lastNameWindow, int lastNameWindowXCoord, HWND ageWindow, int ageWindowXCoord, HWND phoneNumberWindow, int phoneNumberWindowXCoord,
 							HWND gpaWindow, int gpaWindowXCoord);
@@ -349,19 +438,39 @@ public:
 
 	HWND IdWindow;
 	int IdWindowXCoord;
+	int IdWindowYCoord;
+	int IdWindowHeight;
+	int IdWindowWidth;
 	HWND FirstNameWindow;
 	int FirstNameWindowXCoord;
+	int FirstNameWindowYCoord;
+	int FirstNameWindowHeight;
+	int FirstNameWindowWidth;
 	HWND LastNameWindow;
 	int LastNameWindowXCoord;
+	int LastNameWindowYCoord;
+	int LastNameWindowHeight;
+	int LastNameWindowWidth;
 	HWND PhoneNumberWindow;
 	int PhoneNumberWindowXCoord;
+	int PhoneNumberWindowYCoord;
+	int PhoneNumberWindowHeight;
+	int PhoneNumberWindowWidth;
 	HWND AgeWindow;
 	int AgeWindowXCoord;
+	int AgeWindowYCoord;
+	int AgeWindowHeight;
+	int AgeWindowWidth;
 	HWND GpaWindow;
 	int GpaWindowXCoord;
+	int GpaWindowYCoord;
+	int GpaWindowHeight;
+	int GpaWindowWidth;
 
 };
 #endif
+
+
 
 
 
@@ -370,6 +479,145 @@ StudentWindowCollection.cpp
 ************************************************************************************************************************************************************************************************
 
 #include "StudentWindowCollection.h"
+
+
+StudentWindowCollection::StudentWindowCollection(HWND idWindow,
+	int idWindowXCoord,
+	int idWindowYCoord,
+	int idWindowHeight,
+	int idWindowWidth,
+	HWND firstNameWindow,
+	int firstNameWindowXCoord,
+	int firstNameWindowYCoord,
+	int firstNameWindowHeight,
+	int firstNameWindowWidth,
+	HWND lastNameWindow,
+	int lastNameWindowXCoord,
+	int lastNameWindowYCoord,
+	int lastNameWindowHeight,
+	int lastNameWindowWidth,
+	HWND phoneNumberWindow,
+	int phoneNumberWindowXCoord,
+	int phoneNumberWindowYCoord,
+	int phoneNumberWindowHeight,
+	int phoneNumberWindowWidth,
+	HWND ageWindow,
+	int ageWindowXCoord,
+	int ageWindowYCoord,
+	int ageWindowHeight,
+	int ageWindowWidth,
+	HWND gpaWindow,
+	int gpaWindowXCoord,
+	int gpaWindowYCoord,
+	int gpaWindowHeight,
+	int gpaWindowWidth
+	)
+{
+	IdWindow = idWindow;
+	FirstNameWindow = firstNameWindow;
+	FirstNameWindowXCoord = firstNameWindowXCoord;
+	LastNameWindow = lastNameWindow;
+	LastNameWindowXCoord = lastNameWindowXCoord;
+	AgeWindow = ageWindow;
+	AgeWindowXCoord = ageWindowXCoord;
+	PhoneNumberWindow = phoneNumberWindow;
+	PhoneNumberWindowXCoord = phoneNumberWindowXCoord;
+	GpaWindow = gpaWindow;
+	GpaWindowXCoord = gpaWindowXCoord;
+
+	IdWindowXCoord = idWindowXCoord;
+	FirstNameWindowXCoord = firstNameWindowXCoord;
+	LastNameWindowXCoord = lastNameWindowXCoord;
+	AgeWindowXCoord = ageWindowXCoord;
+	PhoneNumberWindowXCoord = phoneNumberWindowXCoord;
+	GpaWindowXCoord = gpaWindowXCoord;
+
+	IdWindowYCoord = idWindowYCoord;
+	FirstNameWindowYCoord = firstNameWindowYCoord;
+	LastNameWindowYCoord = lastNameWindowYCoord;
+	AgeWindowYCoord = ageWindowYCoord;
+	PhoneNumberWindowYCoord = phoneNumberWindowYCoord;
+	GpaWindowYCoord = gpaWindowYCoord;
+
+	IdWindowHeight = idWindowHeight;
+	FirstNameWindowHeight = firstNameWindowHeight;
+	LastNameWindowHeight = lastNameWindowHeight;
+	AgeWindowHeight = ageWindowHeight;
+	PhoneNumberWindowHeight = phoneNumberWindowHeight;
+	GpaWindowHeight = gpaWindowHeight;
+
+	IdWindowWidth = idWindowWidth;
+	FirstNameWindowWidth = firstNameWindowWidth;
+	LastNameWindowWidth = lastNameWindowWidth;
+	AgeWindowWidth = ageWindowWidth;
+	PhoneNumberWindowWidth = phoneNumberWindowWidth;
+	GpaWindowWidth = gpaWindowWidth;
+
+
+}
+
+	StudentWindowCollection::StudentWindowCollection(
+		int idWindowXCoord,
+		int idWindowYCoord,
+		int idWindowHeight,
+		int idWindowWidth,
+		int firstNameWindowXCoord,
+		int firstNameWindowYCoord,
+		int firstNameWindowHeight,
+		int firstNameWindowWidth,
+		int lastNameWindowXCoord,
+		int lastNameWindowYCoord,
+		int lastNameWindowHeight,
+		int lastNameWindowWidth,
+		int phoneNumberWindowXCoord,
+		int phoneNumberWindowYCoord,
+		int phoneNumberWindowHeight,
+		int phoneNumberWindowWidth,
+		int ageWindowXCoord,
+		int ageWindowYCoord,
+		int ageWindowHeight,
+		int ageWindowWidth,
+		int gpaWindowXCoord,
+		int gpaWindowYCoord,
+		int gpaWindowHeight,
+		int gpaWindowWidth
+		)
+	{
+		IdWindowXCoord = idWindowXCoord;
+		FirstNameWindowXCoord = firstNameWindowXCoord;
+		LastNameWindowXCoord = lastNameWindowXCoord;
+		AgeWindowXCoord = ageWindowXCoord;
+		PhoneNumberWindowXCoord = phoneNumberWindowXCoord;
+		GpaWindowXCoord = gpaWindowXCoord;
+
+		IdWindowYCoord = idWindowYCoord;
+		FirstNameWindowYCoord = firstNameWindowYCoord;
+		LastNameWindowYCoord = lastNameWindowYCoord;
+		AgeWindowYCoord = ageWindowYCoord;
+		PhoneNumberWindowYCoord = phoneNumberWindowYCoord;
+		GpaWindowYCoord = gpaWindowYCoord;
+
+		IdWindowHeight = idWindowHeight;
+		FirstNameWindowHeight = firstNameWindowHeight;
+		LastNameWindowHeight = lastNameWindowHeight;
+		AgeWindowHeight = ageWindowHeight;
+		PhoneNumberWindowHeight = phoneNumberWindowHeight;
+		GpaWindowHeight = gpaWindowHeight;
+
+		IdWindowWidth = idWindowWidth;
+		FirstNameWindowWidth = firstNameWindowWidth;
+		LastNameWindowWidth = lastNameWindowWidth;
+		AgeWindowWidth = ageWindowWidth;
+		PhoneNumberWindowWidth = phoneNumberWindowWidth;
+		GpaWindowWidth = gpaWindowWidth;
+}
+
+
+
+
+
+
+
 
 
 StudentWindowCollection::StudentWindowCollection(HWND idWindow, int idWindowXCoord, HWND firstNameWindow, int firstNameWindowXCoord,
@@ -418,6 +666,7 @@ StudentWindowCollection::StudentWindowCollection(int idWindowXCoord, int firstNa
 }
 
 StudentWindowCollection::StudentWindowCollection() {}
+
 
 
 
