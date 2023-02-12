@@ -246,14 +246,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					
 
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdId.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 							ES_LEFT, 50, 200 + offset * 26, 100, 25, hCanvasWindow,
 							(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 250, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 360, 200 + offset * 26, 100, 25, hCanvasWindow,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdAgeString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 470, 200 + offset * 26, 100, 25, hCanvasWindow,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdPhone.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 580, 200 + offset * 26, 100, 25, hCanvasWindow,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdGpaString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+						ES_LEFT, 700, 200 + offset * 26, 100, 25, hCanvasWindow,
+						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 					
 
 					++offset;
@@ -271,6 +286,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
 
 
 
