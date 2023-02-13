@@ -150,10 +150,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		GetScrollInfo(hCanvasWindow, SB_VERT, &sj);
 		switch (LOWORD(wParam)) {
 		case SB_LINEDOWN: {
-			sj.nPos -= 5;
+			sj.nPos += 5;
 		}break;
 		case SB_LINEUP: {
-			sj.nPos += 5;
+			sj.nPos -= 5;
 		}break;
 		case SB_THUMBTRACK: {
 			sj.nPos = HIWORD(wParam);
@@ -292,18 +292,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
