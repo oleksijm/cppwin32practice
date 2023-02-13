@@ -9,7 +9,7 @@
 #include "StudentRec.h"
 //#include "StudentWindowCollection.h"
 	
-//last update - 12.02.2023 - HORIZONTAL SCROLL WORKS AND CSV TO WINDOW PARSING ALSO WORKS AND MOVES WITH THE SCROLL!!!! 
+//last update - 13.02.2023 - Vertical scroll added.
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -32,6 +32,7 @@ HWND hButton;
 
 CHAR s_text_1[]{ "Some text.." };
 int posX = 0;
+int posY = 0;
 
 
 #define IDC_TEXTBOX 1000
@@ -103,6 +104,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		si.nMin = 0;
 		SetScrollInfo(hCanvasWindow, SB_HORZ, &si, TRUE);
 
+		//vertical scrolling set up
+		SCROLLINFO sj;
+		sj.cbSize = sizeof(sj);
+		sj.nPos = 0;
+		sj.nMax = 1200;
+		sj.nPage = 400;
+		sj.fMask = SIF_ALL;
+		sj.nMin = 0;
+		SetScrollInfo(hCanvasWindow, SB_VERT, &sj, TRUE);
+
 		break;
 	}
 	//not working properly - 06.02.2023. it's working, but I'm still learning the details.
@@ -123,7 +134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		};
 		SetScrollInfo(hCanvasWindow, SB_HORZ, &si, TRUE);
 		posX = -si.nPos;
-		MoveWindow( // 50, 50, 400, 25 - original
+		MoveWindow( 
 			hCanvasWindow,
 			posX,
 			0,
@@ -131,41 +142,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			4800,
 			TRUE
 		);
-		//MoveWindow( // 500, 30, 100, 60 - original 
-		//	hButton,
-		//	posX+500,
-		//	30,
-		//	100,
-		//	60,
-		//	TRUE
-		//);
+		break;
+	}
+	case WM_VSCROLL: {
+		SCROLLINFO sj;
+		sj.cbSize = sizeof(sj);
+		GetScrollInfo(hCanvasWindow, SB_VERT, &sj);
+		switch (LOWORD(wParam)) {
+		case SB_LINEDOWN: {
+			sj.nPos -= 5;
+		}break;
+		case SB_LINEUP: {
+			sj.nPos += 5;
+		}break;
+		case SB_THUMBTRACK: {
+			sj.nPos = HIWORD(wParam);
+		}break;
+		};
+		SetScrollInfo(hCanvasWindow, SB_VERT, &sj, TRUE);
+		posY = -sj.nPos;
+		MoveWindow(
+			hCanvasWindow,
+			0,
+			posY,
+			8000,
+			4800,
+			TRUE
+		);
+		break;
+	}
 
-		//for (auto wndw : wndws)
-		//{
-		//	//int mycounter = 10;
-
-		//	MoveWindow(wndw, posX + 50, 50, 400, 35, TRUE);
-		//	//mycounter = mycounter * 10;
-
-		//}
-
-
-
-		
-
-		/*for (auto window1 : windows)
-		 {
-			MoveWindow(window1->IdWindow, posX + window1->IdWindowXCoord, window1->IdWindowYCoord, window1->IdWindowWidth, window1->IdWindowHeight, TRUE);
-			MoveWindow(window1->FirstNameWindow, posX + window1->FirstNameWindowXCoord, window1->FirstNameWindowYCoord, window1->FirstNameWindowWidth, window1->FirstNameWindowHeight, TRUE);
-			MoveWindow(window1->LastNameWindow, posX + window1->LastNameWindowXCoord, window1->LastNameWindowYCoord, window1->LastNameWindowWidth, window1->LastNameWindowHeight, TRUE);
-			MoveWindow(window1->PhoneNumberWindow, posX + window1->PhoneNumberWindowXCoord, window1->PhoneNumberWindowYCoord, window1->PhoneNumberWindowWidth, window1->PhoneNumberWindowHeight, TRUE);
-			MoveWindow(window1->AgeWindow, posX + window1->AgeWindowXCoord, window1->AgeWindowYCoord, window1->AgeWindowWidth, window1->AgeWindowHeight, TRUE);
-			MoveWindow(window1->GpaWindow, posX + window1->GpaWindowXCoord, window1->GpaWindowYCoord, window1->GpaWindowWidth, window1->GpaWindowHeight, TRUE);
-			
-		}*/
-
-
-	}break;
 
 
 		//press button
@@ -286,6 +292,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
 
 
 
