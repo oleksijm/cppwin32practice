@@ -9,7 +9,7 @@
 #include "StudentRec.h"
 //#include "StudentWindowCollection.h"
 	
-//last update - 13.02.2023 - Vertical scroll added.
+//last update - 17.02.2023 - const auto& iterator added to improve efficiency.
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -231,24 +231,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				//loop through students array and output info into windows
 
-				for (auto student : students)
+				for (const auto& student : students)
 				{
-					
-					std::string* StdIdP = &student.Id;
-					std::string* StdFirstNameP = &student.FirstName;
-					std::string* StdLastNameP = &student.LastName;
-					int* StdAgeP = &student.Age;
-					std::string* StdPhoneP = &student.PhoneNumber;
-					double* StdGpaP = &student.Gpa;
-					std::string StdId = *StdIdP;
-					std::string StdFirstName = *StdFirstNameP;
-					std::string StdLastName = *StdLastNameP;
-					int StdAge = *StdAgeP;
-					std::string StdAgeString = std::to_string(StdAge);
-					std::string StdPhone = *StdPhoneP;
-					double StdGpa = *StdGpaP;
-					std::string StdGpaString = std::to_string(StdGpa);
 
+					std::string StdId = student.Id;
+					std::string StdFirstName = student.FirstName;
+					std::string StdLastName = student.LastName;
+					int StdAge = student.Age;
+					std::string StdAgeString = std::to_string(StdAge);
+					std::string StdPhone = student.PhoneNumber;
+					double StdGpa = student.Gpa;
+					std::string StdGpaString = std::to_string(StdGpa);
 					
 
 
