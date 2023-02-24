@@ -7,9 +7,9 @@
 #include <sstream>
 //#include <memory>
 #include "StudentRec.h"
-//#include "StudentWindowCollection.h"
+#include "StudentWindowCollection.h"
 	
-//last update - 17.02.2023 - const auto& iterator added to improve efficiency.
+//last update - 24.02.2023 - fixed horizontal and vertical scroll to be in sync. added vector for window collections in order to be able to delete windows.
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -26,17 +26,27 @@ HWND hMainWindow;
 HWND hCanvasWindow;
 HINSTANCE hMainInstance;
 
-HWND hLblOutput;
+HWND hLblOutputId;
+HWND hLblOutputFirstName;
+HWND hLblOutputLastName;
+HWND hLblOutputAge;
+HWND hLblOutputPhone;
+HWND hLblOutputGpa;
+
 HWND hTxtInput;
 HWND hButton;
+HWND hButtonDel;
 
 CHAR s_text_1[]{ "Some text.." };
 int posX = 0;
 int posY = 0;
 
+std::vector<StudentWindowCollection> windows;
+
 
 #define IDC_TEXTBOX 1000
 #define IDC_BUTTON 1001
+#define IDC_BUTTON_DEL 1002
 
 
 
@@ -75,7 +85,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int offset = 0;
 	std::wstring input;
-	//std::vector<StudentWindowCollection*> windows;
+	
 	//std::vector<HWND> wndws;
 	switch (message) {
 
@@ -88,9 +98,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_VISIBLE | WS_CHILD | ES_LEFT, 50, 50, 400, 25, hWnd,
 			(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 		
-		//wndws.push_back(hTxtInput);
+		//get info from csv into windows - button to trigger
 		hButton = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Press Me!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 500, 50, 400, 25, hWnd,
 			(HMENU)IDC_BUTTON, hMainInstance, NULL);
+
+		//delete last series of windows - button to trigger
+		hButtonDel = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Delete last!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 500, 100, 400, 25, hWnd,
+			(HMENU)IDC_BUTTON_DEL, hMainInstance, NULL);
+
+	
 		
 		//wndws.push_back(hButton);
 
@@ -137,7 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		MoveWindow( 
 			hCanvasWindow,
 			posX,
-			0,
+			posY,
 			8000,
 			4800,
 			TRUE
@@ -163,7 +179,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		posY = -sj.nPos;
 		MoveWindow(
 			hCanvasWindow,
-			0,
+			posX,
 			posY,
 			8000,
 			4800,
@@ -196,7 +212,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				std::string line = "";
 				std::vector<StudentRec> students;
-				//std::vector<StudentWindowCollection> windows;
+				
 				while (std::getline(inputFile, line))
 				{
 
@@ -244,30 +260,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					std::string StdGpaString = std::to_string(StdGpa);
 					
 
+				
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdId.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+
+					hLblOutputId = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdId.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 							ES_LEFT, 50, 200 + offset * 26, 100, 25, hCanvasWindow,
 							(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutputFirstName = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdFirstName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 250, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutputLastName = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdLastName.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 360, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdAgeString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutputAge = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdAgeString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 470, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdPhone.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutputPhone = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdPhone.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 580, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
 
-					hLblOutput = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdGpaString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
+					hLblOutputGpa = CreateWindowEx(WS_EX_STATICEDGE, TEXT("EDIT"), StdGpaString.c_str(), WS_VISIBLE | WS_CHILD | ES_READONLY |
 						ES_LEFT, 700, 200 + offset * 26, 100, 25, hCanvasWindow,
 						(HMENU)IDC_TEXTBOX, hMainInstance, NULL);
+
+					StudentWindowCollection Swc(hLblOutputId, hLblOutputFirstName, hLblOutputLastName, hLblOutputAge, hLblOutputPhone, hLblOutputGpa);
+					windows.push_back(Swc);
+
+
 					
 
 					++offset;
@@ -277,7 +300,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 			}
-			break; 
+			
+
+			else if (LOWORD(wParam) == IDC_BUTTON_DEL)
+			{
+			StudentWindowCollection Swc = windows.back();
+			
+			DestroyWindow(Swc.IdWindow);
+			DestroyWindow(Swc.FirstNameWindow);
+			DestroyWindow(Swc.LastNameWindow);
+			DestroyWindow(Swc.AgeWindow);
+			DestroyWindow(Swc.PhoneNumberWindow);
+			DestroyWindow(Swc.GpaWindow);
+			windows.pop_back();
+
+			
+			
+			}
+			break;
 		}
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -285,6 +325,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
 
 
 
