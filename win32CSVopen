@@ -9,7 +9,7 @@
 #include "StudentRec.h"
 #include "StudentWindowCollection.h"
 	
-//last update - 24.02.2023 - fixed horizontal and vertical scroll to be in sync. added vector for window collections in order to be able to delete windows.
+//last update - 26.02.2023 - added check for empty vector
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -41,6 +41,7 @@ CHAR s_text_1[]{ "Some text.." };
 int posX = 0;
 int posY = 0;
 
+//vector to hold windows collection of student data
 std::vector<StudentWindowCollection> windows;
 
 
@@ -304,18 +305,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			else if (LOWORD(wParam) == IDC_BUTTON_DEL)
 			{
-			StudentWindowCollection Swc = windows.back();
+			if (windows.empty()) {}
 			
-			DestroyWindow(Swc.IdWindow);
-			DestroyWindow(Swc.FirstNameWindow);
-			DestroyWindow(Swc.LastNameWindow);
-			DestroyWindow(Swc.AgeWindow);
-			DestroyWindow(Swc.PhoneNumberWindow);
-			DestroyWindow(Swc.GpaWindow);
-			windows.pop_back();
+			else
+				{
+			
+					StudentWindowCollection Swc = windows.back();
+			
+					DestroyWindow(Swc.IdWindow);
+					DestroyWindow(Swc.FirstNameWindow);
+					DestroyWindow(Swc.LastNameWindow);
+					DestroyWindow(Swc.AgeWindow);
+					DestroyWindow(Swc.PhoneNumberWindow);
+					DestroyWindow(Swc.GpaWindow);
+					windows.pop_back();
 
 			
-			
+				}
 			}
 			break;
 		}
@@ -325,6 +331,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
 
 
 
