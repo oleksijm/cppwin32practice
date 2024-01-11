@@ -9,7 +9,8 @@
 #include "StudentRec.h"
 #include "StudentWindowCollection.h"
 	
-//last update - 26.02.2023 - added check for empty vector
+//last update - 11.01.2024 - working towards adding a SORT button - by grade.
+//update - 26.02.2023 - added check for empty vector
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
 
@@ -33,9 +34,11 @@ HWND hLblOutputAge;
 HWND hLblOutputPhone;
 HWND hLblOutputGpa;
 
-HWND hTxtInput;
-HWND hButton;
-HWND hButtonDel;
+HWND hTxtInput; //1000
+HWND hButton; //1001
+HWND hButtonDel; //1002
+HWND hButtonSort; //1003
+HWND hButtonReset; //1004
 
 CHAR s_text_1[]{ "Some text.." };
 int posX = 0;
@@ -48,6 +51,8 @@ std::vector<StudentWindowCollection> windows;
 #define IDC_TEXTBOX 1000
 #define IDC_BUTTON 1001
 #define IDC_BUTTON_DEL 1002
+#define IDC_BUTTON_SORT_HTL 1003
+#define IDC_BUTTON_RESET 1004
 
 
 
@@ -93,7 +98,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 	{
 		hMainWindow = hWnd; //aaa will be visible
-		hCanvasWindow = CreateWindowEx(0, "STATIC", "aaa", WS_CHILD | WS_VISIBLE, posX, 0, 8000, 4800, hMainWindow, NULL, NULL, NULL);
+		hCanvasWindow = CreateWindowEx(0, "STATIC", "", WS_CHILD | WS_VISIBLE, posX, 0, 8000, 4800, hMainWindow, NULL, NULL, NULL);
 		//hCanvasWindow = hWnd; //aaa will not be visible
 		hTxtInput = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), s_text_1,
 			WS_VISIBLE | WS_CHILD | ES_LEFT, 50, 50, 400, 25, hWnd,
@@ -133,7 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		break;
 	}
-	//not working properly - 06.02.2023. it's working, but I'm still learning the details.
+	
 	case WM_HSCROLL: {
 		SCROLLINFO si;
 		si.cbSize = sizeof(si);
@@ -323,6 +328,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			
 				}
 			}
+
+			//else if - ALL THE OTHER BUTTONS - SORT AND RESET
+
 			break;
 		}
 		default:
@@ -331,6 +339,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
 
 
 
