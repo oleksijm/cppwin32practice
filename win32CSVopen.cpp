@@ -8,8 +8,10 @@
 //#include <memory>
 #include "StudentRec.h"
 #include "StudentWindowCollection.h"
-	
-//last update - 11.01.2024 - working towards adding a SORT button - by grade.
+
+
+//last update - 12.01.2024 - added SORT button graphics. now need to design the logic
+//update - 11.01.2024 - working towards adding a SORT button - by grade.
 //update - 26.02.2023 - added check for empty vector
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
 //Now I need to implement horizontal scrolling across the output windows as well.
@@ -110,6 +112,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		//delete last series of windows - button to trigger
 		hButtonDel = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Delete last!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 500, 100, 400, 25, hWnd,
+			(HMENU)IDC_BUTTON_DEL, hMainInstance, NULL);
+
+		//LOWEST BUTTON FEASIBLE - OTHER BUTTONS WOULD NEED TO BE TO THE RIGHT - moved to the right
+		//sort from highest to lowest grades - button to trigger
+		hButtonSort = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("BUTTON"), TEXT("Sort list!"), WS_VISIBLE | WS_CHILD | WM_COPY | ES_LEFT, 950, 50, 400, 25, hWnd,
 			(HMENU)IDC_BUTTON_DEL, hMainInstance, NULL);
 
 	
@@ -339,6 +346,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+
 
 
 
