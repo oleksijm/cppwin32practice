@@ -22,6 +22,9 @@
 //lresult callback prototype
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+void swap(std::vector<StudentRec>& v, int x, int y);
+
+void quicksort(std::vector<StudentRec>& vec, double L, double R);
 
 
 //window handles
@@ -55,6 +58,7 @@ std::vector<StudentWindowCollection> windows;
 #define IDC_BUTTON_DEL 1002
 #define IDC_BUTTON_SORT_HTL 1003
 #define IDC_BUTTON_RESET 1004
+
 
 
 
@@ -346,6 +350,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+//function definitions - swap and quicksort
+void swap(std::vector<StudentRec>& v, int x, int y) {
+	//need all parameters, not just Gpa - swap is going to affect the whole class
+	double temp = v[x].Gpa;
+	v[x].Gpa = v[y].Gpa;
+	v[y].Gpa = temp;
+
+	void quicksort(std::vector<int>&vec, int L, int R) {
+		int i, j, mid, piv;
+		i = L;
+		j = R;
+		mid = L + (R - L) / 2;
+		piv = vec[mid];
+
+		while (i<R || j>L) {
+			while (vec[i] < piv)
+				i++;
+			while (vec[j] > piv)
+				j--;
+
+			if (i <= j) {
+				swap(vec, i, j); //error=swap function doesnt take 3 arguments
+				i++;
+				j--;
+			}
+			else {
+				if (i < R)
+					quicksort(vec, i, R);
+				if (j > L)
+					quicksort(vec, L, j);
+				return;
+			}
+		}
+	}
 
 
 
