@@ -10,7 +10,8 @@
 #include "StudentWindowCollection.h"
 
 
-//last update - 12.01.2024 - added SORT button graphics. now need to design the logic
+//last update - 15.01.2024 - adding copy constructor to StudentRec object in order to be able to sort and swap
+//update - 12.01.2024 - added SORT button graphics. now need to design the logic
 //update - 11.01.2024 - working towards adding a SORT button - by grade.
 //update - 26.02.2023 - added check for empty vector
 //It's beginning to look better. Need to pack window handles into a vector and loop through the vector to move them all. Done.
@@ -358,17 +359,18 @@ void swap(std::vector<StudentRec>& v, int x, int y) {
 	v[x].Gpa = v[y].Gpa;
 	v[y].Gpa = temp;
 
-	void quicksort(std::vector<int>&vec, int L, int R) {
-		int i, j, mid, piv;
+	void quicksort(std::vector<StudentRec>&vec, int L, int R) {
+		int i, j, mid;  //piv;
+		double piv;
 		i = L;
 		j = R;
 		mid = L + (R - L) / 2;
-		piv = vec[mid];
+		piv = vec[mid].Gpa;
 
 		while (i<R || j>L) {
-			while (vec[i] < piv)
+			while (vec[i].Gpa < piv)
 				i++;
-			while (vec[j] > piv)
+			while (vec[j].Gpa > piv)
 				j--;
 
 			if (i <= j) {
@@ -387,13 +389,6 @@ void swap(std::vector<StudentRec>& v, int x, int y) {
 	}
 
 
-
-
-
-
-
-
-
 *******************************************************************************************************************************************************************************************
 StudentRec.h 
 ********************************************************************************************************************************************************************************************
@@ -404,10 +399,7 @@ StudentRec.h
 
 class StudentRec
 {
-	public:
-		StudentRec(std::string id, std::string firstName, std::string lastName, int age, std::string phoneNumber, double gpa);
-	
-
+public:
 	std::string Id;
 	std::string FirstName;
 	std::string LastName;
@@ -415,9 +407,18 @@ class StudentRec
 	int Age;
 	double Gpa;
 
+	
+		StudentRec(std::string id, std::string firstName, std::string lastName, int age, std::string phoneNumber, double gpa);
+		StudentRec(StudentRec &t);
+		
+	
+
+	
+
 
 };
 #endif
+
 
 ********************************************************************************************************************************************************************************************
 StudentRec.cpp
@@ -435,6 +436,15 @@ StudentRec::StudentRec(std::string id, std::string firstName, std::string lastNa
 		Gpa = gpa;
 
 	}
+StudentRec::StudentRec(StudentRec &t)
+{
+	Id = t.Id;
+	FirstName = t.FirstName;
+	LastName = t.LastName;
+	Age = t.Age;
+	PhoneNumber = t.PhoneNumber;
+	Gpa = t.Gpa;
+}
 	
 	
 **********************************************************************************************************************************************************************************************
